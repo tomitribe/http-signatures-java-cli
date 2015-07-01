@@ -1,0 +1,142 @@
+<!--
+  ~ Tomitribe Confidential
+  ~
+  ~ Copyright(c) Tomitribe Corporation. 2015
+  ~
+  ~ The source code for this program is not published or otherwise divested
+  ~ of its trade secrets, irrespective of what has been deposited with the
+  ~ U.S. Copyright Office.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.tomitribe</groupId>
+    <artifactId>tomitribe-parent</artifactId>
+    <version>5</version>
+  </parent>
+
+  <artifactId>tomitribe-http-signatures-cli</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Tomitribe :: HTTP Signatures :: CLI Verifier</name>
+
+  <repositories>
+    <repository>
+      <id>tomitribe-all</id>
+      <name>Tomitribe Repository</name>
+      <url>http://repository.tomitribe.com/content/groups/tomitribe/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <version.dependency.cxf>2.6.16</version.dependency.cxf>
+    <version.dependency.tomitribe-signatures>1.0</version.dependency.tomitribe-signatures>
+    <version.dependency.tomitribe-util>1.1.0</version.dependency.tomitribe-util>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>signature-verifier-standalone</finalName>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>standalone</shadedClassifierName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.tomitribe.auth.signatures.cli.SignatureVerifier</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/services/com.sun.tools.xjc.Plugin</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/cxf/cxf.extension</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/extensions.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/cxf/extensions.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/cxf/bus-extensions.txt</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/cxf/bus-extensions.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/wsdl.plugin.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/tools.service.validator.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.cxf.maven.PluginTransformer">
+                  <resource>META-INF/tools-plugin.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                  <resource>META-INF/cxf/java2wsbeans.xml</resource>
+                </transformer>
+                <transformer implementation="org.apache.cxf.maven.CXFAllTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.cxf.build-utils</groupId>
+            <artifactId>cxf-buildtools</artifactId>
+            <version>2.6.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <version>${version.dependency.cxf}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>tomitribe-http-signatures</artifactId>
+      <version>${version.dependency.tomitribe-signatures}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>tomitribe-util</artifactId>
+      <version>${version.dependency.tomitribe-util}</version>
+    </dependency>
+  </dependencies>
+</project>
