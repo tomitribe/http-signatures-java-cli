@@ -50,7 +50,8 @@ public final class SignatureVerifier {
         @Option("http-method") @Default("GET") final String method,
         @Option("payload") final String payload,
         @Option("type") final String type,
-        @Option("accept") final String accept
+        @Option("accept") final String accept,
+        @Option("request-headers") final String[] customHeaders // --request-headers=custom1=val1 --request-headers=custom2=val2
     ) throws Exception {
         final WebClient webClient = WebClient
             .create(endpoint, emptyList(),
@@ -66,6 +67,16 @@ public final class SignatureVerifier {
         }
         if (accept != null) {
             webClient.accept(accept);
+        }
+        if (customHeaders != null) {
+            for (final String h : customHeaders) {
+                final int eq = h.indexOf('=');
+                if (eq < 0) {
+                    webClient.header(h, "");
+                } else {
+                    webClient.header(h.substring(0, eq), h.substring(eq + 1, h.length()));
+                }
+            }
         }
 
         if (endpoint.startsWith("https")) {
