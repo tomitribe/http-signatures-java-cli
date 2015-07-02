@@ -35,7 +35,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.dependency.cxf>2.6.16</version.dependency.cxf>
-    <version.dependency.tomitribe-signatures>1.0</version.dependency.tomitribe-signatures>
+    <version.dependency.tomitribe-signatures>1.1.0</version.dependency.tomitribe-signatures>
     <version.dependency.tomitribe-util>1.1.0</version.dependency.tomitribe-util>
   </properties>
 
@@ -128,8 +128,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.tomitribe</groupId>
-      <artifactId>tomitribe-http-signatures</artifactId>
+      <groupId>com.tomitribe</groupId>
+      <artifactId>tomitribe-http-signatures-cxf</artifactId>
       <version>${version.dependency.tomitribe-signatures}</version>
     </dependency>
 
