@@ -14,6 +14,14 @@ import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.feature.LoggingFeature;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.tomitribe.crest.Main;
+import org.tomitribe.crest.api.Command;
+import org.tomitribe.crest.api.Default;
+import org.tomitribe.crest.api.Exit;
+import org.tomitribe.crest.api.Option;
+import org.tomitribe.crest.api.Required;
+import org.tomitribe.crest.cmds.CommandFailedException;
+import org.tomitribe.crest.environments.SystemEnvironment;
 import org.tomitribe.util.IO;
 
 import javax.net.ssl.TrustManager;
@@ -22,66 +30,88 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Collections;
 
-/**
- * Description.
- *
- * @author Roberto Cortez
- */
-public class SignatureVerifier {
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+
+public final class SignatureVerifier {
     private SignatureVerifier() {
-        throw new UnsupportedOperationException();
+        // no-op
     }
 
-    public static void main(String[] args) throws Exception {
-        if (args.length < 5 || args.length > 6) {
-            System.out.println("Usage: secret alias address path method [payload]");
-            System.exit(-1);
+    @Command
+    public static void verify(
+        @Option("alias") @Required final String alias,
+        @Option("secret") @Required final String secret,
+        @Option("endpoint") @Required final String endpoint,
+        @Option("digest-algorithm") @Default("sha-256") final String digest,
+        @Option("signature-algorithm") @Default("hmac-sha256") final String signature,
+        @Option("headers") @Default("(request-target) date digest") final String headers,
+        @Option("http-method") @Default("GET") final String method,
+        @Option("payload") final String payload,
+        @Option("type") final String type,
+        @Option("accept") final String accept
+    ) throws Exception {
+        final WebClient webClient = WebClient
+            .create(endpoint, emptyList(),
+                asList(new SecurityFeature(
+                    digest,
+                    secret,
+                    alias,
+                    signature,
+                    headers
+                ), new LoggingFeature()), null);
+        if (type != null) {
+            webClient.type(type);
+        }
+        if (accept != null) {
+            webClient.accept(accept);
         }
 
-        final String secret = args[0];
-        final String alias = args[1];
-        final String address = args[2];
-        final String path = args[3];
+        if (endpoint.startsWith("https")) {
+            final HTTPConduit conduit = WebClient.getConfig(webClient).getHttpConduit();
 
-        System.out.println("secret = " + secret);
-        System.out.println("alias = " + alias);
-        System.out.println("address = " + address);
-        System.out.println("path = " + path);
+            final TLSClientParameters params = new TLSClientParameters();
+            params.setTrustManagers(new TrustManager[]{new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+                    // no-op
+                }
 
-        WebClient webClient = WebClient
-                .create(address, Collections.emptyList(),
-                    Arrays.asList(new SecurityFeature(
-                        "sha-256",
-                        secret,
-                        alias,
-                        "hmac-sha256",
-                        "(request-target) date digest"
-                    ), new LoggingFeature()), null)
-                .path(path);
+                @Override
+                public void checkServerTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+                    // no-op
+                }
 
-        final HTTPConduit conduit = WebClient.getConfig(webClient).getHttpConduit();
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+            }});
+            params.setDisableCNCheck(true);
+            conduit.setTlsClientParameters(params);
+        }
 
-        TLSClientParameters params = new TLSClientParameters();
-        params.setTrustManagers(new TrustManager[]{new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {}
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {}
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        }});
-        params.setDisableCNCheck(true);
-        conduit.setTlsClientParameters(params);
-
-        final Response response = webClient.invoke(args[4], args.length == 6 ? args[5] : null);
+        final Response response = webClient.invoke(method, payload);
         System.out.println(response.getStatus());
         System.out.println(IO.slurp(InputStream.class.cast(response.getEntity())));
+    }
+
+    public static void main(final String[] args) throws Exception {
+        try {
+            new Main(SignatureVerifier.class).main(new SystemEnvironment(), args);
+        } catch (final CommandFailedException cfe) {
+            final Throwable cause = cfe.getCause();
+            final Exit exit = cause.getClass().getAnnotation(Exit.class);
+            if (exit != null) {
+                System.err.println(cfe.getMessage());
+                System.exit(exit.value());
+            } else {
+                cause.printStackTrace();
+                System.exit(-1);
+            }
+        } catch (final Exception var5) {
+            System.exit(-1);
+        }
     }
 }
