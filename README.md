@@ -26,6 +26,6 @@ Allows you to test HTTP signatures of a HTTP message to a server. After building
 
 ## Example of invocation 
 
-```java -jar target/signature-verifier-standalone.jar verify --alias=xxx --secret=yyyyy --endpoint=http://zzzz:8080/app/api/users --http-method=POST --type=application/json --accept=application/json --payload='{'name': 'Test'}'```
+```java -jar target/signature-verifier-standalone-<version>.jar verify --alias=xxx --secret=yyyyy --endpoint=http://zzzz:8080/app/api/users --http-method=POST --type=application/json --accept=application/json --payload='{'name': 'Test'}'```
 
 * Note: You can find the signature-verifier-standalone.jar in the project ```target``` directory.

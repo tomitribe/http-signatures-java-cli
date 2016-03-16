@@ -61,7 +61,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>signature-verifier-standalone</finalName>
+              <finalName>signature-verifier-standalone-${version}</finalName>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <shadedClassifierName>standalone</shadedClassifierName>
               <transformers>
