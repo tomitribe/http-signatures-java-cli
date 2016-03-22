@@ -23,6 +23,12 @@
 
   <name>Tomitribe :: HTTP Signatures :: CLI Verifier</name>
 
+  <scm>
+    <connection>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</connection>
+    <developerConnection>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</developerConnection>
+    <url>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</url>
+  </scm>
+
   <repositories>
     <repository>
       <id>tomitribe-all</id>
