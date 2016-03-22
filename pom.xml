@@ -17,16 +17,16 @@
     <version>6</version>
   </parent>
 
-  <artifactId>tomitribe-http-signatures-cli</artifactId>
+  <artifactId>http-signatures-java-cli</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Tomitribe :: HTTP Signatures :: CLI Verifier</name>
 
   <scm>
-    <connection>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</connection>
-    <developerConnection>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</developerConnection>
-    <url>scm:git:https://github.com/tomitribe/tomitribe-http-signatures-cli.git</url>
+    <connection>scm:git:https://github.com/tomitribe/http-signatures-java-cli.git</connection>
+    <developerConnection>scm:git:https://github.com/tomitribe/http-signatures-java-cli.git</developerConnection>
+    <url>scm:git:https://github.com/tomitribe/http-signatures-java-cli.git</url>
   </scm>
 
   <repositories>
